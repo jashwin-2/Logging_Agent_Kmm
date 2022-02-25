@@ -1,0 +1,139 @@
+html {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.details[open] summary {
+    font-weight: bold;
+}
+
+details>summary {
+    list-style-type: none;
+    padding-top: 6px;
+    font-size: 15px;
+}
+
+details>summary::-webkit-details-marker {
+    display: none;
+}
+
+details>summary::before {
+    padding-right: 10px;
+    content: "\f0da";
+    font-family: FontAwesome;
+}
+
+details[open]>summary::before {
+    content: '\f0d7';
+    font-family: FontAwesome;
+}
+
+.table-borderless>tbody>tr>td,
+.table-borderless>tbody>tr>th,
+.table-borderless>tfoot>tr>td,
+.table-borderless>tfoot>tr>th,
+.table-borderless>thead>tr>td,
+.table-borderless>thead>tr>th {
+    padding-left: 16px;
+    border-block-color: #5b5b5bd6;
+}
+
+.table-borderless {
+    table-layout: fixed;
+    over-flow: break-word;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.table-borderless {
+    max-width: 95%;
+}
+
+.my-custom-scrollbar {
+    overflow-y: scroll;
+}
+
+.log_cat_div {
+    position: relative;
+    height: 500px;
+    padding-left: 28px;
+    padding-top: 18px;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background-color: #383737;
+}
+
+.table-wrapper-scroll-y {
+    display: block;
+}
+
+.my-custom-scrollbar {
+    height: 600px;
+    padding: 4px;
+    padding-left: 28px;
+    padding-top: 18px;
+    border-radius: 10px;
+    margin: 10px;
+    background-color: #383737;
+}
+
+.title_summary {
+    font-size: 24px;
+    padding-bottom: 8px;
+}
+
+th {
+    font-size: 26px;
+    padding-top: 10px;
+    padding-left: 30px;
+}
+
+h1 {
+    padding-left: 16px;
+    padding-bottom: 8px;
+}
+
+body {
+    color: white;
+    background-color: #2f2f2f;
+}
+
+tbody {
+    background-color: #383737;
+}
+
+.background_div {
+    padding-left: 25px;
+    border-radius: 10px;
+    background-color: #3a3939d4;
+    margin: 10px;
+    width: 100%;
+}
+
+.inner-table-body {
+    background-color: #383737ed;
+}
+
+.no_data_div {
+    width: 100%;
+    text-align: center;
+    padding: 35px 0;
+    font-size: 26px;
+}
+
+.graph_div {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.secondary_graph_div {
+    height: 260px;
+    width: 97%;
+    padding-top: 10px;
+    padding-left: 4px;
+    margin-right: 6px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    background-color: #464545;
+}
