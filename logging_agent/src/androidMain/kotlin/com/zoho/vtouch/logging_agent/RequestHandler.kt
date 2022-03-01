@@ -10,7 +10,7 @@ import java.util.*
 
 actual class Server actual constructor(port : Int){
     private val serverSocket : ServerSocket = ServerSocket(port)
-    actual fun accept(): PlatformSocket {
+    actual fun accept(): Socket {
         return serverSocket.accept()
     }
 
@@ -19,20 +19,20 @@ actual class Server actual constructor(port : Int){
     }
 
 }
-actual typealias PlatformSocket = java.net.Socket
+actual typealias Socket = java.net.Socket
 actual typealias Assets = AssetManager
-actual class RequestHandler actual constructor(val platformSocket : PlatformSocket, var assets: AssetManager) {
+actual class RequestHandler actual constructor(val socket : Socket, var assets: AssetManager) {
   actual fun handle() {
         var reader: BufferedReader? = null
         var output: PrintStream? = null
         try {
 
             var route: String? = null
-            val inp = platformSocket.getInputStream()
+            val inp = socket.getInputStream()
             val s = Scanner(inp, "UTF-8")
             val data: String = s.useDelimiter("\\r\\n\\r\\n").next()
             // Read HTTP headers and parse out the route.
-            reader = BufferedReader(InputStreamReader(platformSocket.getInputStream()))
+            reader = BufferedReader(InputStreamReader(socket.getInputStream()))
            var line: String
            while (!TextUtils.isEmpty(data.also { line = it })) {
                if (line.startsWith("GET /")) {
@@ -42,7 +42,7 @@ actual class RequestHandler actual constructor(val platformSocket : PlatformSock
                    break
                }
            }
-           output = PrintStream(platformSocket.getOutputStream())
+           output = PrintStream(socket.getOutputStream())
 
            // Output stream that we send the response to
            if (route == null || route.isEmpty()) {
@@ -72,7 +72,7 @@ actual class RequestHandler actual constructor(val platformSocket : PlatformSock
 }
 
     actual fun close() {
-        platformSocket.close()
+        socket.close()
     }
 }
 

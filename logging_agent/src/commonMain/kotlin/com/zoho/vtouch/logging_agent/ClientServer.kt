@@ -5,15 +5,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-expect class  Server(port: Int){
-    fun accept() : PlatformSocket
-    fun close() : Unit
-}
-expect class PlatformSocket
+expect class Socket
 
-class ClientServer(port: Int,val assets: com.zoho.vtouch.logging_agent.Assets)  {
+expect class Assets
+
+class ClientServer(port: Int, private val assets: Assets) {
     private val mPort: Int = port
-    private var socketCallBack : WebSocketCallback? = null
+    private var socketCallBack: WebSocketCallback? = null
     private lateinit var mRequestHandler: RequestHandler
 
     var isRunning = false
@@ -42,13 +40,13 @@ class ClientServer(port: Int,val assets: com.zoho.vtouch.logging_agent.Assets)  
     private fun startTheServer() {
         try {
             mServer = Server(mPort)
-           while (isRunning) {
+            while (isRunning) {
 
-               val socket = mServer!!.accept()
-               mRequestHandler = RequestHandler(socket, assets)
-               mRequestHandler.handle()
+                val socket = mServer!!.accept()
+                mRequestHandler = RequestHandler(socket, assets)
+                mRequestHandler.handle()
 
-               mRequestHandler.close()
+                mRequestHandler.close()
             }
         } catch (e: Exception) {
             socketCallBack?.onError(e)

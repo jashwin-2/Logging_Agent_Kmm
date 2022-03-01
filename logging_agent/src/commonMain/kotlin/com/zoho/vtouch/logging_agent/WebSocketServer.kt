@@ -8,15 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-expect class WebSocketHandler(sessionDetails: SessionDetails, callback: WebSocketCallback){
-    var isClientConnected:Boolean
-    fun handle(client : PlatformSocket)
-    fun encode(message: String): ByteArray
-    fun offer(message: String)
-    var callback : WebSocketCallback
-    fun close()
-
-}
 
 class WebSocketServer(
     port: Int,
@@ -24,15 +15,15 @@ class WebSocketServer(
     private val socketCallback: WebSocketCallback
 ) {
     private val mPort: Int = port
-     var mRequestHandler: WebSocketHandler? = null
+    var mRequestHandler: WebSocketHandler? = null
     private var isRunning = false
     private var web: Server? = null
 
     fun start() {
         isRunning = true
-       CoroutineScope(Dispatchers.Default).launch {
-           run()
-       }
+        CoroutineScope(Dispatchers.Default).launch {
+            run()
+        }
     }
 
     fun stop() {
@@ -48,7 +39,7 @@ class WebSocketServer(
         }
     }
 
-     fun run() {
+    fun run() {
         try {
             web = Server(mPort)
             while (isRunning) {
@@ -68,7 +59,7 @@ class WebSocketServer(
         sendJsonToClient(statistics)
     }
 
-    fun  sendJsonToClient(json : String){
+    fun sendJsonToClient(json: String) {
         mRequestHandler?.apply {
             if (isClientConnected) {
                 offer(json)
@@ -78,11 +69,10 @@ class WebSocketServer(
     }
 
 
-
     fun sendJsonToClient(json: JsonData) {
         mRequestHandler?.apply {
             if (isClientConnected) {
-                offer(json.ToJson())
+                offer(json.toJson())
             } else
                 callback.onError(Exception("Client not connected"))
         }
@@ -97,13 +87,12 @@ class WebSocketServer(
     }
 
     fun sendGraphData(list: MutableList<GraphData>) {
-        JsonData(JsonData.GRAPH_DATA, list,"").also {
+        JsonData(JsonData.GRAPH_DATA, list, "").also {
             sendJsonToClient(it)
         }
     }
 
     fun isClientConnected(): Boolean = mRequestHandler?.isClientConnected ?: false
-
 
 
 }

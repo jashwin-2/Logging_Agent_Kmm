@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         const val STATS_5 = "Stats 5"
         const val LOGS = "Logs"
         const val LOGS_1 = "Logs 1"
-        const val GRAPH_1 = "Graph1"
+        const val GRAPH_1 = "Graph 1"
         const val GRAPH_2 = "Graph2"
         const val GRAPH_3 = "Graph3"
         const val GRAPH_4 = "Graph4"
@@ -167,7 +167,7 @@ class MainActivity : AppCompatActivity() {
     fun sendGraphs() {
         GlobalScope.launch {
             while (true) {
-                delay(1000)
+                delay(2000)
                 if (webSocket?.isClientConnected() == true) {
                     val list = mutableListOf<GraphData>()
                     list.addAll(

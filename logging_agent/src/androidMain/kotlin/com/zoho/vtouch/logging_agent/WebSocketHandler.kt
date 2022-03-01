@@ -21,15 +21,15 @@ import kotlin.experimental.xor
 
 actual class WebSocketHandler actual constructor(var sessionDetails: SessionDetails, actual var callback: WebSocketCallback)
      {
-      private  lateinit var platformSocket : PlatformSocket
+      private  lateinit var socket : Socket
     private var out: OutputStream? = null
     var messages = ArrayBlockingQueue<String>(20)
     actual var isClientConnected = false
 
 
-    actual fun handle(client: PlatformSocket) {
+    actual fun handle(client: Socket) {
         try {
-            platformSocket = client
+            socket = client
             val input = client.getInputStream()
             out = client.getOutputStream()
             val s = Scanner(input, "UTF-8")
@@ -227,7 +227,7 @@ Sec-WebSocket-Accept: $key
     }
 
     actual fun close() {
-        platformSocket.close()
+        socket.close()
     }
 
 

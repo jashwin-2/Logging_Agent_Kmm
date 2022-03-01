@@ -182,14 +182,14 @@ function initializeGraphs() {
             var canvas = $('<canvas/>', { id: removeSpace(graphs[i]), style: 'height: 200px;width: 100%;' })
             secondryDiv.append(canvas)
             graphDiv.append(secondryDiv)
-            createGraph(removeSpace(graphs[i]))
+            createGraph(graphs[i])
         }
 
     }
 
 }
 
-function createGraph(div_id) {
+function createGraph(chartTitle) {
 
     const plugin = {
         title: {
@@ -210,7 +210,7 @@ function createGraph(div_id) {
 
 
 
-    var chart = new Chart(div_id, {
+    var chart = new Chart(removeSpace(chartTitle), {
         plugins: [plugin],
         type: 'line',
         data: {
@@ -226,7 +226,7 @@ function createGraph(div_id) {
             plugins: {
                 title: {
                     display: true,
-                    text: div_id,
+                    text: chartTitle,
                     color: "#ffffff",
 
                 },
@@ -239,7 +239,8 @@ function createGraph(div_id) {
             maintainAspectRatio: false,
             elements: {
                 point: {
-                    radius: 0
+                    radius: 1.3,
+
                 }
             },
             scales: {
@@ -281,7 +282,7 @@ function createGraph(div_id) {
             }
         }
     });
-    charts.set(div_id, chart)
+    charts.set(removeSpace(chartTitle), chart)
 
 }
 
@@ -337,11 +338,11 @@ function updateTable(stats, id) {
             var detail = document.getElementById("detail-" + id + key)
             if (opened.indexOf(detail) != -1) {
                 Object.entries(value).forEach((entry1) => {
-                    const [key1, value1] = entry1;
-                    var row = document.getElementById("value-" + key + "-" + key1)
-                    row.innerHTML = value1
-                })
-                console.log(key + " updated using currently received data")
+                        const [key1, value1] = entry1;
+                        var row = document.getElementById("value-" + key + "-" + key1)
+                        row.innerHTML = value1
+                    })
+                    //   console.log(key + " updated using currently received data")
 
             }
         }
@@ -454,12 +455,12 @@ function updateStats(id, statsTitle) {
 
 function updateRow(data, statsTitle) {
     Object.entries(data).forEach((entry) => {
-        const [key, value] = entry;
-        var row = document.getElementById("value-" + statsTitle + "-" + key)
-        row.innerHTML = value
+            const [key, value] = entry;
+            var row = document.getElementById("value-" + statsTitle + "-" + key)
+            row.innerHTML = value
 
-    })
-    console.log(statsTitle + " updated using stored data")
+        })
+        // console.log(statsTitle + " updated using stored data")
 
 }
 

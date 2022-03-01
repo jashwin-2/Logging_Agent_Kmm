@@ -16,7 +16,7 @@ object LoggingAgent {
         serverPort: Int,
         data: SessionDetails,
         socketCallback: WebSocketCallback,
-        assets: com.zoho.vtouch.logging_agent.Assets
+        assets: Assets
     ): WebSocketServer {
 
 
