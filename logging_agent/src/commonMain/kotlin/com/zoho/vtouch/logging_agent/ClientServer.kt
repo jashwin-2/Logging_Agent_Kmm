@@ -39,7 +39,7 @@ class ClientServer(port: Int, private val assets: Assets) {
         try {
             isRunning = false
             if (null != mServer) {
-                mServer!!.close()
+                mServer?.close()
                 mServer = null
             }
         } catch (e: Exception) {
