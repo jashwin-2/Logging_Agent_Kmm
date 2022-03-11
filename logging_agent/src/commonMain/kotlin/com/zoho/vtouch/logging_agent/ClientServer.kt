@@ -5,14 +5,24 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-expect class Socket
+expect class Socket{
+    val inputStream : InputStream
+    val outputStream : OutputStream
+    fun close()
+}
+
+
+expect class ConcurrentQueue<String>(size : Int){
+    fun take() : String
+    fun offer(string: String)
+}
 
 expect class Assets
 
 class ClientServer(port: Int, private val assets: Assets) {
     private val mPort: Int = port
     private var socketCallBack: WebSocketCallback? = null
-    private lateinit var mRequestHandler: RequestHandler
+    private lateinit var requestHandler: RequestHandler
 
     var isRunning = false
     private var mServer: Server? = null
@@ -41,16 +51,13 @@ class ClientServer(port: Int, private val assets: Assets) {
         try {
             mServer = Server(mPort)
             while (isRunning) {
-
                 val socket = mServer!!.accept()
-                mRequestHandler = RequestHandler(socket, assets)
-                mRequestHandler.handle()
-
-                mRequestHandler.close()
+                requestHandler = RequestHandler(socket, assets)
+                requestHandler.handle()
+                requestHandler.close()
             }
         } catch (e: Exception) {
             socketCallBack?.onError(e)
-
         }
     }
 

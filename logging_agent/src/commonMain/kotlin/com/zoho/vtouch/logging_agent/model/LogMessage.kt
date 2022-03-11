@@ -1,9 +1,12 @@
 package com.zoho.vtouch.logging_agent.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class LogMessage(
     val logLevel: String,
     val logMessage: String,
-    private val time: String = com.zoho.vtouch.logging_agent.Utils.getCurrentTime()
+    val timeStamp: Long
 ) {
     companion object {
         const val INFO = "Info"

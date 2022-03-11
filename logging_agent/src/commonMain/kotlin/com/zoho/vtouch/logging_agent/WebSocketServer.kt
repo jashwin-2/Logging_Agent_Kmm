@@ -8,16 +8,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+expect class JSONObject
+
 
 class WebSocketServer(
     port: Int,
-    val sessionDetails: SessionDetails,
+    private val sessionDetails: SessionDetails,
     private val socketCallback: WebSocketCallback
 ) {
     private val mPort: Int = port
     var mRequestHandler: WebSocketHandler? = null
     private var isRunning = false
-    private var web: Server? = null
+    private var webSocket: Server? = null
 
     fun start() {
         isRunning = true
@@ -29,21 +31,21 @@ class WebSocketServer(
     fun stop() {
         try {
             isRunning = false
-            if (null != web) {
+            if (null != webSocket) {
                 mRequestHandler!!.isClientConnected = false
-                web!!.close()
-                web = null
+                webSocket!!.close()
+                webSocket = null
             }
         } catch (e: Exception) {
-
+            socketCallback.onError(e)
         }
     }
 
-    fun run() {
+    private fun run() {
         try {
-            web = Server(mPort)
+            webSocket = Server(mPort)
             while (isRunning) {
-                val socket = web!!.accept()
+                val socket = webSocket!!.accept()
                 mRequestHandler =
                     WebSocketHandler(sessionDetails, socketCallback)
                 mRequestHandler!!.handle(socket)
@@ -55,8 +57,14 @@ class WebSocketServer(
         }
     }
 
-    fun sendStatsToClient(statistics: JsonData) {
-        sendJsonToClient(statistics)
+    fun sendStatsToClient(jsonObject: JSONObject, id : String) {
+        val json = createJSON(jsonObject,id)
+        sendJsonToClient(json)
+    }
+
+    fun sendStatsToClient(json : String,id : String){
+        val data = createJSON(json,id)
+        sendJsonToClient(data)
     }
 
     fun sendJsonToClient(json: String) {
@@ -92,7 +100,10 @@ class WebSocketServer(
         }
     }
 
-    fun isClientConnected(): Boolean = mRequestHandler?.isClientConnected ?: false
+    val isClientConnected : Boolean
+        get() {
+        return mRequestHandler?.isClientConnected ?: false
+    }
 
 
 }

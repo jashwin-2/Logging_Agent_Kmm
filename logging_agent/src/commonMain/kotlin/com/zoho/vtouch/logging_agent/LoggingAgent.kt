@@ -5,8 +5,8 @@ import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
 object LoggingAgent {
-    private val DEFAULT_PORT = 8000
-    private val WEB_SOCKET_PORT = 8001
+    private const val DEFAULT_SERVER_PORT = 8000
+    private const val WEB_SOCKET_PORT = 8001
     private var clientServer: ClientServer? = null
     private var websocketsServer: WebSocketServer? = null
     private var addresses = mutableListOf<String>()
@@ -17,21 +17,14 @@ object LoggingAgent {
         data: SessionDetails,
         socketCallback: WebSocketCallback,
         assets: Assets
-    ): WebSocketServer {
-
-
-        val portNumber: Int = try {
-            serverPort
-        } catch (ex: NumberFormatException) {
-            DEFAULT_PORT
-        }
-        clientServer = ClientServer(portNumber,assets)
-        clientServer!!.start(socketCallback)
-
+    ): WebSocketServer? {
+        val portNumber: Int = if (serverPort == WEB_SOCKET_PORT) DEFAULT_SERVER_PORT else serverPort
+        clientServer = ClientServer(portNumber, assets)
+        clientServer?.start(socketCallback)
         websocketsServer = WebSocketServer(WEB_SOCKET_PORT, data, socketCallback)
-        websocketsServer!!.start()
-       addresses = NetworkUtils.getAddress(serverPort)
-        return websocketsServer!!
+        websocketsServer?.start()
+        addresses = NetworkUtils.getAddress(serverPort)
+        return websocketsServer
     }
 
 
@@ -48,7 +41,6 @@ object LoggingAgent {
 
     val isServerRunning: Boolean
         get() = clientServer != null && clientServer!!.isRunning
-
 
 
     fun getAddress(): String {

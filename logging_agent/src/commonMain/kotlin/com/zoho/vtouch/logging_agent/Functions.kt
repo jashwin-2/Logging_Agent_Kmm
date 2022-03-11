@@ -1,5 +1,5 @@
 package com.zoho.vtouch.logging_agent
 
-import com.zoho.vtouch.logging_agent.model.JsonData
-
-expect fun JsonData.toJson() : String
+expect fun loadContent(fileName: String?, assetManager: Assets): ByteArray?
+expect fun createJSON(json : JSONObject, id :String) : String
+expect fun createJSON(json : String,id : String):String

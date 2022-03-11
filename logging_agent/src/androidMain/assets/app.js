@@ -16,6 +16,7 @@ Object.freeze(LogLevels);
 
 
 var latestStats = new Map();
+var logLimit = 50
 var logQues = new Map();
 var charts = new Map();
 var ids = new Map();
@@ -342,8 +343,6 @@ function updateTable(stats, id) {
                         var row = document.getElementById("value-" + key + "-" + key1)
                         row.innerHTML = value1
                     })
-                    //   console.log(key + " updated using currently received data")
-
             }
         }
 
@@ -394,7 +393,7 @@ class LogQueue {
 
         if (!this.isLoggerIsActive) {
             var queue = this
-            this.logger = setInterval(function() { activateLogger(queue); }, 500);
+            this.logger = setInterval(function() { activateLogger(queue); }, 200);
             this.isLoggerIsActive = true;
 
         }
@@ -425,7 +424,15 @@ function activateLogger(queue) {
 
     const isScrolledToBottom = div.scrollHeight - div.clientHeight <= div.scrollTop + 1
     const newLogMessage = document.createElement("div")
-    newLogMessage.innerHTML = "<p>" + log.time + "&ensp;" + log.logLevel + ":&emsp;" + log.logMessage + "</p>";
+    const date = new Date(log.timeStamp);
+    var hours = date.getHours();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    var minutes = "0" + date.getMinutes();
+    var seconds = "0" + date.getSeconds();
+    var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2) + ' ' + ampm;
+    newLogMessage.innerHTML = "<p>" + formattedTime + "&ensp;" + log.logLevel + ":&emsp;" + log.logMessage + "</p>";
     if (log.logLevel == LogLevels.ERROR)
         newLogMessage.style.color = 'red'
     else if (log.logLevel == LogLevels.INFO)
@@ -435,10 +442,8 @@ function activateLogger(queue) {
 
     if (isScrolledToBottom) {
         div.scrollTop = div.scrollHeight - div.clientHeight
+        removeLogIfExceedLimit(queue.log_div);
     }
-    removeLogIfExceedLimit(queue.log_div);
-
-
 
 
 }
@@ -455,18 +460,20 @@ function updateStats(id, statsTitle) {
 
 function updateRow(data, statsTitle) {
     Object.entries(data).forEach((entry) => {
-            const [key, value] = entry;
-            var row = document.getElementById("value-" + statsTitle + "-" + key)
-            row.innerHTML = value
+        const [key, value] = entry;
+        var row = document.getElementById("value-" + statsTitle + "-" + key)
+        row.innerHTML = value
 
-        })
-        // console.log(statsTitle + " updated using stored data")
+    })
 
 }
 
 function removeLogIfExceedLimit(div) {
-    var len = $("#" + div).children().length;
-    if (len >= 80) {
+    var len = $("#" + div).find('div').children().length;
+    while (len >= logLimit) {
+
         $("#" + div).find('div').first().remove();
+        len = $("#" + div).children().length;
+        console.log("Removed")
     }
 }

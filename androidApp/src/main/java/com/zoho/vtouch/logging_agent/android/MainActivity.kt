@@ -1,23 +1,21 @@
 package com.zoho.vtouch.logging_agent.android
 
 
-
 import android.content.res.AssetManager
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.google.gson.Gson
 import com.zoho.vtouch.logging_agent.LoggingAgent
 import com.zoho.vtouch.logging_agent.WebSocketCallback
 import com.zoho.vtouch.logging_agent.WebSocketServer
 import com.zoho.vtouch.logging_agent.model.GraphData
-import com.zoho.vtouch.logging_agent.model.JsonData
 import com.zoho.vtouch.logging_agent.model.LogMessage
 import com.zoho.vtouch.logging_agent.model.SessionDetails
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStream
 import java.util.*
@@ -52,7 +50,6 @@ class MainActivity : AppCompatActivity() {
             listOf(LOGS, LOGS_1),
             listOf(GRAPH_1, GRAPH_2, GRAPH_3, GRAPH_4)
         )
-//        var agent = LoggingAgent()
         webSocket = LoggingAgent.initialize(
             serverPort = 8000,
             sessionDetails,
@@ -65,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Message Received", "Client : $message")
                 }
 
-            },this.assets
+            }, this.assets
         )
 
         et_address.text = LoggingAgent.getAddress()
@@ -77,7 +74,7 @@ class MainActivity : AppCompatActivity() {
             sendGraphs()
             while (true) {
                 delay(1000)
-                if (webSocket?.isClientConnected() == true) {
+                if (webSocket?.isClientConnected == true) {
                     sendStats()
                     sendLog()
                 }
@@ -93,40 +90,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sendStats() {
-        val type = JsonData.TABLE_DATA
         val audioStats = Objects.requireNonNull(getJsonFromAssets(this.assets, "audio_stats.json"))
-
-            .run { Gson().fromJson(this, Any::class.java) }
         val videoStats = Objects.requireNonNull(getJsonFromAssets(this.assets, "video_stats.json"))
-            .run { Gson().fromJson(this, Any::class.java) }
 
         webSocket?.sendStatsToClient(
-            JsonData(
-                type,
-                videoStats,
-                VIDEO_STATS
-            )
+            JSONObject(audioStats),
+            VIDEO_STATS
         )
         webSocket?.sendStatsToClient(
-            JsonData(
-                type,
-                videoStats,
-                STATS_4
-            )
+            JSONObject(videoStats),
+            STATS_4
         )
+
         webSocket?.sendStatsToClient(
-            JsonData(
-                type,
-                audioStats,
-                STATS_5
-            )
+            videoStats!!,
+            STATS_5
         )
+
         webSocket?.sendStatsToClient(
-            JsonData(
-                type,
-                audioStats,
-                AUDIO_STATS
-            )
+            audioStats!!,
+            AUDIO_STATS
         )
 
     }
@@ -135,13 +118,15 @@ class MainActivity : AppCompatActivity() {
         val id = if (count % 2 == 0) LOGS else LOGS_1
         LogMessage(
             LogMessage.ERROR,
-            "Error Log"
+            "Error Log",
+            System.currentTimeMillis()
         ).also {
             webSocket?.sendLogMessage(it, id)
         }
         LogMessage(
             LogMessage.INFO,
-            "Info log "
+            "Info log ",
+            System.currentTimeMillis()
         ).also {
             webSocket?.sendLogMessage(it, id)
         }
@@ -168,7 +153,7 @@ class MainActivity : AppCompatActivity() {
         GlobalScope.launch {
             while (true) {
                 delay(2000)
-                if (webSocket?.isClientConnected() == true) {
+                if (webSocket?.isClientConnected == true) {
                     val list = mutableListOf<GraphData>()
                     list.addAll(
                         listOf(

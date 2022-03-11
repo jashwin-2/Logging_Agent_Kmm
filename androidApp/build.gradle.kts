@@ -29,6 +29,4 @@ dependencies {
 
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.7")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
-
-    implementation ("com.google.code.gson:gson:2.8.5")
 }

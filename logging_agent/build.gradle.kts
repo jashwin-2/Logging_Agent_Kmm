@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    kotlin("plugin.serialization") version "1.6.10"
 }
 
 kotlin {
@@ -16,12 +17,18 @@ kotlin {
         }
     }
 
-
+    val korioVersion = "2.2.0"
+    val kryptoVersion = "2.2.0"
+    val klockVersion = "2.2.0"
     sourceSets {
         val commonMain by getting{
             dependencies {
-                implementation("androidx.core:core-ktx:1.2.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+                implementation("com.soywiz.korlibs.krypto:krypto:$kryptoVersion")
+                implementation("com.soywiz.korlibs.korio:korio:$korioVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
+                implementation("com.soywiz.korlibs.klock:klock:$klockVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
             }
         }
         val commonTest by getting {
@@ -29,11 +36,7 @@ kotlin {
                 implementation(kotlin("test"))
             }
         }
-        val androidMain by getting{
-            dependencies {
-                implementation("com.google.code.gson:gson:2.8.5")
-            }
-        }
+        val androidMain by getting
         val androidTest by getting
         val iosX64Main by getting
         val iosArm64Main by getting
@@ -53,6 +56,9 @@ kotlin {
             iosArm64Test.dependsOn(this)
             iosSimulatorArm64Test.dependsOn(this)
         }
+    }
+    kotlin.sourceSets.all {
+        languageSettings.optIn("kotlin.RequiresOptIn")
     }
 }
 
