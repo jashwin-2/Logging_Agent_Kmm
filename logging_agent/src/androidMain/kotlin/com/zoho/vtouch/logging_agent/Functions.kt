@@ -1,8 +1,6 @@
 package com.zoho.vtouch.logging_agent
 
 import android.app.Activity
-import android.app.ActivityManager
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -58,9 +56,9 @@ actual fun createJSON(json: JSONObject, id: String): String {
 actual fun createJSON(json: String, id: String): String = createJSON(JSONObject(json), id)
 
 actual fun getApplicationIcon(context: PlatformContext): ByteArray? {
-    val d = context.packageManager.getApplicationIcon(context.applicationInfo)
+    val drawable = context.packageManager.getApplicationIcon(context.applicationInfo)
     val stream = ByteArrayOutputStream()
-    val bitMap = getBitmapFromDrawable(d)
+    val bitMap = getBitmapFromDrawable(drawable)
     bitMap?.compress(Bitmap.CompressFormat.JPEG, 100, stream)
     return stream.toByteArray()
 }
@@ -82,11 +80,6 @@ private fun getBitmapFromDrawable(drawable: Drawable): Bitmap? {
 
 actual fun sendMemoryStats(webSocket: WebSocketServer?, context: PlatformContext) {
     val runtime: Runtime = Runtime.getRuntime()
-    val memoryInfo = ActivityManager.MemoryInfo()
-    (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(
-        memoryInfo
-    )
-
     CoroutineScope(Dispatchers.Default).launch {
         var usedMemInMB: Long
         var maxHeapSizeInMB: Long

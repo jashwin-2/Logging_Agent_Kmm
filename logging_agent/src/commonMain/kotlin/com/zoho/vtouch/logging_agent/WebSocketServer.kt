@@ -61,13 +61,13 @@ class WebSocketServer(
         }
     }
 
-    fun sendStatsToClient(jsonObject: JSONObject, id : String) {
-        val json = createJSON(jsonObject,id)
+    fun sendStatsToClient(jsonObject: JSONObject, id: String) {
+        val json = createJSON(jsonObject, id)
         sendJsonToClient(json)
     }
 
-    fun sendStatsToClient(json : String,id : String){
-        val data = createJSON(json,id)
+    fun sendStatsToClient(json: String, id: String) {
+        val data = createJSON(json, id)
         sendJsonToClient(data)
     }
 
@@ -104,9 +104,9 @@ class WebSocketServer(
         }
     }
 
-    val isClientConnected : Boolean
+    val isClientConnected: Boolean
         get() {
-        return mRequestHandler?.isClientConnected ?: false
-    }
+            return mRequestHandler?.isClientConnected ?: false
+        }
 
 }

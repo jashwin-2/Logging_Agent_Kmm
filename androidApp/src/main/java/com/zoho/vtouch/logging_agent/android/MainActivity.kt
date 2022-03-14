@@ -23,8 +23,8 @@ import java.io.InputStream
 class MainActivity : AppCompatActivity() {
     var count = 1
     var webSocket: WebSocketServer? = null
-    private lateinit var audioStats : String
-    private lateinit var videoStats : String
+    private lateinit var audioStats: String
+    private lateinit var videoStats: String
 
     companion object {
         const val AUDIO_STATS = "Audio Stats"
@@ -66,19 +66,18 @@ class MainActivity : AppCompatActivity() {
             }, this
         )
 
-
         et_address.text = LoggingAgent.getAddress()
 
 
-
-
         GlobalScope.launch {
-            sendGraphs()
             while (true) {
-                delay(1000)
+                delay(2000)
+                if (webSocket?.isRunning == false)
+                    return@launch
                 if (webSocket?.isClientConnected == true) {
                     sendStats()
                     sendLog()
+                    sendGraphs()
                 }
 
             }
@@ -92,7 +91,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    fun sendStats() {
+    private fun sendStats() {
         webSocket?.sendStatsToClient(
             JSONObject(audioStats),
             VIDEO_STATS
@@ -103,18 +102,18 @@ class MainActivity : AppCompatActivity() {
         )
 
         webSocket?.sendStatsToClient(
-            videoStats!!,
+            videoStats,
             STATS_5
         )
 
         webSocket?.sendStatsToClient(
-            audioStats!!,
+            audioStats,
             AUDIO_STATS
         )
 
     }
 
-    fun sendLog() {
+    private fun sendLog() {
         val id = if (count % 2 == 0) LOGS else LOGS_1
         LogMessage(
             LogMessage.ERROR,
@@ -135,7 +134,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    fun getJsonFromAssets(manager: AssetManager, fileName: String?): String? {
+    private fun getJsonFromAssets(manager: AssetManager, fileName: String?): String? {
         return try {
             val inputStream: InputStream = manager.open(fileName!!)
             val size = inputStream.available()
@@ -149,10 +148,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun sendGraphs() {
-        GlobalScope.launch {
-            while (true) {
-                delay(1400)
+    private fun sendGraphs() {
                 if (webSocket?.isClientConnected == true) {
                     val list = mutableListOf<GraphData>()
                     list.addAll(
@@ -173,8 +169,8 @@ class MainActivity : AppCompatActivity() {
 
                 }
             }
-        }
-    }
+
+
 
 
 }
