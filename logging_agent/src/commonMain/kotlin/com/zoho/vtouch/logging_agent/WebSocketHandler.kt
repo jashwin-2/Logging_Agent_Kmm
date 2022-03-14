@@ -52,6 +52,8 @@ Sec-WebSocket-Accept: $key
                 }
             } finally {
                 isClientConnected = false
+                callback.onError(Exception("Client Disconnected"))
+                return
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -87,7 +89,7 @@ Sec-WebSocket-Accept: $key
                         // b[0] assuming text
                         val data = b[1]
                         val op = 127.toByte()
-                        rLength = (data and op) as Byte
+                        rLength = (data and op)
                         length = rLength.toInt()
                         if (rLength == 126.toByte()) {
                             rMaskIndex = 4
@@ -106,14 +108,14 @@ Sec-WebSocket-Accept: $key
                         i = rDataStart
                         totalRead = 0
                         while (i < len && i < totalLength) {
-                            message[totalRead] = (b[i] xor masks[totalRead % 4]) as Byte
+                            message[totalRead] = (b[i] xor masks[totalRead % 4])
                             i++
                             totalRead++
                         }
                     } else {
                         i = 0
                         while (i < len && totalRead < length) {
-                            message!![totalRead] = (b[i] xor masks[totalRead % 4]) as Byte
+                            message!![totalRead] = (b[i] xor masks[totalRead % 4])
                             i++
                             totalRead++
                         }

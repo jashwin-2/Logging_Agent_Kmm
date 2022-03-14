@@ -7,9 +7,11 @@ import com.zoho.vtouch.logging_agent.model.SessionDetails
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.jvm.Synchronized
 
 
 expect class JSONObject
+expect class PlatformContext
 
 
 class WebSocketServer(
@@ -19,7 +21,8 @@ class WebSocketServer(
 ) {
     private val mPort: Int = port
     var mRequestHandler: WebSocketHandler? = null
-    private var isRunning = false
+    var isRunning = false
+        private set
     private var webSocket: Server? = null
 
     fun start() {
@@ -95,7 +98,7 @@ class WebSocketServer(
 
     }
 
-    fun sendGraphData(list: MutableList<GraphData>) {
+    fun sendGraphData(list: List<GraphData>) {
         JsonData(JsonData.GRAPH_DATA, list, "").also {
             sendJsonToClient(it)
         }
@@ -105,6 +108,5 @@ class WebSocketServer(
         get() {
         return mRequestHandler?.isClientConnected ?: false
     }
-
 
 }

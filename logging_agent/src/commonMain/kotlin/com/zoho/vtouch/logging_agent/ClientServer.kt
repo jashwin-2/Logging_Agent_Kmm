@@ -17,9 +17,7 @@ expect class ConcurrentQueue<String>(size : Int){
     fun offer(string: String)
 }
 
-expect class Assets
-
-class ClientServer(port: Int, private val assets: Assets) {
+class ClientServer(port: Int, private val context: PlatformContext) {
     private val mPort: Int = port
     private var socketCallBack: WebSocketCallback? = null
     private lateinit var requestHandler: RequestHandler
@@ -52,7 +50,7 @@ class ClientServer(port: Int, private val assets: Assets) {
             mServer = Server(mPort)
             while (isRunning) {
                 val socket = mServer!!.accept()
-                requestHandler = RequestHandler(socket, assets)
+                requestHandler = RequestHandler(socket, context)
                 requestHandler.handle()
                 requestHandler.close()
             }

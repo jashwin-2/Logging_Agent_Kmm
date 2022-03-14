@@ -240,7 +240,7 @@ function createGraph(chartTitle) {
             maintainAspectRatio: false,
             elements: {
                 point: {
-                    radius: 1.3,
+                    radius: 0,
 
                 }
             },
@@ -393,7 +393,7 @@ class LogQueue {
 
         if (!this.isLoggerIsActive) {
             var queue = this
-            this.logger = setInterval(function() { activateLogger(queue); }, 200);
+            this.logger = setInterval(function() { activateLogger(queue); }, 100);
             this.isLoggerIsActive = true;
 
         }

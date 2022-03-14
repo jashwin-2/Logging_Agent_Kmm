@@ -7,26 +7,38 @@ import kotlin.native.concurrent.ThreadLocal
 object LoggingAgent {
     private const val DEFAULT_SERVER_PORT = 8000
     private const val WEB_SOCKET_PORT = 8001
+    const val USED_MEMORY = "Used memory in MB"
+    const val AVAILABLE_MEMORY = "Available Heap size in MB"
+
     private var clientServer: ClientServer? = null
     private var websocketsServer: WebSocketServer? = null
     private var addresses = mutableListOf<String>()
 
 
+
     fun initialize(
         serverPort: Int,
-        data: SessionDetails,
+        sessionDetails: SessionDetails,
         socketCallback: WebSocketCallback,
-        assets: Assets
+        context: PlatformContext
     ): WebSocketServer? {
         val portNumber: Int = if (serverPort == WEB_SOCKET_PORT) DEFAULT_SERVER_PORT else serverPort
-        clientServer = ClientServer(portNumber, assets)
+        clientServer = ClientServer(portNumber, context)
         clientServer?.start(socketCallback)
-        websocketsServer = WebSocketServer(WEB_SOCKET_PORT, data, socketCallback)
+        addMemoryGraphs(sessionDetails)
+        websocketsServer = WebSocketServer(WEB_SOCKET_PORT, sessionDetails, socketCallback)
         websocketsServer?.start()
         addresses = NetworkUtils.getAddress(serverPort)
+        sendMemoryStats(websocketsServer,context)
         return websocketsServer
     }
 
+
+    private fun addMemoryGraphs(sessionDetails: SessionDetails){
+        val graphs = mutableListOf(USED_MEMORY, AVAILABLE_MEMORY)
+        graphs.addAll(sessionDetails.graphs)
+        sessionDetails.graphs = graphs
+    }
 
     fun shutDown() {
         if (clientServer != null) {

@@ -1,6 +1,5 @@
 package com.zoho.vtouch.logging_agent
 
-import android.content.res.AssetManager
 import java.net.ServerSocket
 
 actual class Server actual constructor(port: Int) {
@@ -18,4 +17,3 @@ actual class Server actual constructor(port: Int) {
 
 }
 
-actual typealias Assets = AssetManager

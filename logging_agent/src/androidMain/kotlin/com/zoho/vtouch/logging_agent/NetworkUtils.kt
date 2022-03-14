@@ -22,7 +22,6 @@ actual object NetworkUtils{
             }
         } catch (e: SocketException) {
             e.printStackTrace()
-
         }
         return list
     }

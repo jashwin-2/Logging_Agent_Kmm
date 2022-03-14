@@ -1,7 +1,7 @@
 package com.zoho.vtouch.logging_agent
 
 
-class RequestHandler(private val socket: Socket, var assets: Assets) {
+class RequestHandler(private val socket: Socket,private var context: PlatformContext) {
     fun handle() {
         var route: String? = null
         val inputStream = socket.inputStream
@@ -13,15 +13,22 @@ class RequestHandler(private val socket: Socket, var assets: Assets) {
                 val start = line.indexOf('/') + 1
                 val end = line.indexOf(' ', start)
                 route = line.substring(start, end)
-
                 break
             }
         }
+        var bytes: ByteArray? = null
 
         if (route == null || route.isEmpty()) {
             route = "home.html"
+        } else if (route == "appIcon.ico") {
+            bytes = getApplicationIcon(context)
+            if (bytes == null)
+                route = "defaultIcon.ico"
         }
-        val bytes: ByteArray = loadContent(route, assets) ?: return
+
+        if (bytes == null)
+            bytes = loadContent(route, context) ?: return
+
         outPutStream.apply {
             println("HTTP/1.0 200 OK")
             println("Content-Type: " + Utils.detectMimeType(route))

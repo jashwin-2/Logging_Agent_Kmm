@@ -18,11 +18,13 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStream
-import java.util.*
+
 
 class MainActivity : AppCompatActivity() {
     var count = 1
     var webSocket: WebSocketServer? = null
+    private lateinit var audioStats : String
+    private lateinit var videoStats : String
 
     companion object {
         const val AUDIO_STATS = "Audio Stats"
@@ -33,14 +35,13 @@ class MainActivity : AppCompatActivity() {
         const val LOGS_1 = "Logs 1"
         const val GRAPH_1 = "Graph 1"
         const val GRAPH_2 = "Graph2"
-        const val GRAPH_3 = "Graph3"
-        const val GRAPH_4 = "Graph4"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        audioStats = getJsonFromAssets(this.assets, "audio_stats.json")!!
+        videoStats = getJsonFromAssets(this.assets, "video_stats.json")!!
 
         val sessionDetails = SessionDetails(
             listOf(
@@ -48,7 +49,7 @@ class MainActivity : AppCompatActivity() {
                 VIDEO_STATS, STATS_4, STATS_5
             ),
             listOf(LOGS, LOGS_1),
-            listOf(GRAPH_1, GRAPH_2, GRAPH_3, GRAPH_4)
+            listOf(GRAPH_1, GRAPH_2)
         )
         webSocket = LoggingAgent.initialize(
             serverPort = 8000,
@@ -62,8 +63,9 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Message Received", "Client : $message")
                 }
 
-            }, this.assets
+            }, this
         )
+
 
         et_address.text = LoggingAgent.getAddress()
 
@@ -89,10 +91,8 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
     }
 
-    fun sendStats() {
-        val audioStats = Objects.requireNonNull(getJsonFromAssets(this.assets, "audio_stats.json"))
-        val videoStats = Objects.requireNonNull(getJsonFromAssets(this.assets, "video_stats.json"))
 
+    fun sendStats() {
         webSocket?.sendStatsToClient(
             JSONObject(audioStats),
             VIDEO_STATS
@@ -152,31 +152,21 @@ class MainActivity : AppCompatActivity() {
     fun sendGraphs() {
         GlobalScope.launch {
             while (true) {
-                delay(2000)
+                delay(1400)
                 if (webSocket?.isClientConnected == true) {
                     val list = mutableListOf<GraphData>()
                     list.addAll(
                         listOf(
                             GraphData(
                                 GRAPH_1,
-                                (0..100).random(),
+                                (0..100).random().toFloat(),
                                 System.currentTimeMillis()
                             ),
                             GraphData(
                                 GRAPH_2,
-                                (0..100).random(),
+                                (0..100).random().toFloat(),
                                 System.currentTimeMillis()
-                            ),
-                            GraphData(
-                                GRAPH_3,
-                                (0..100).random(),
-                                System.currentTimeMillis()
-                            ),
-                            GraphData(
-                                GRAPH_4,
-                                (0..100).random(),
-                                System.currentTimeMillis()
-                            ),
+                            )
                         )
                     )
                     webSocket?.sendGraphData(list)
