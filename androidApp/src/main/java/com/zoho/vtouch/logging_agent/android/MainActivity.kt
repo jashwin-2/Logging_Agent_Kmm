@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity() {
 
         GlobalScope.launch {
             while (true) {
-                delay(2000)
+                delay(1600)
                 if (webSocket?.isRunning == false)
                     return@launch
                 if (webSocket?.isClientConnected == true) {
